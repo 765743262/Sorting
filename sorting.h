@@ -13,5 +13,4 @@ enum alg_type
 
 };
 void Sort(Item arr[], int size, enum alg_type alg);
-
 #endif
