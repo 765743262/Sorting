@@ -6,7 +6,7 @@ enum alg_type
 {
 	INSERTION,
 	SHELL,
-	HEAPSORT,
+	HEAP,
 	QUICK,
 	MERGE,
 	BUCKET
