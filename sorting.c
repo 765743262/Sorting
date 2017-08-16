@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "sorting.h"
 // In qsort, if array size is less than or equal to CUTOFF, we consider it as a base case.
-#define CUTOFF 10
+#define CUTOFF 20
 
 
 static void insertion(Item arr[], int size);
