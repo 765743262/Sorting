@@ -27,7 +27,7 @@ int main(void)
 {
 	int test[ARR_SIZE];
 	set_random(test, ARR_SIZE);
-	Sort(test, ARR_SIZE, MERGE);
+	Sort(test, ARR_SIZE, QUICK);
 	show_array(test, ARR_SIZE);
 
 }

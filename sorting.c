@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sorting.h"
+// In qsort, if array size is less than or equal to CUTOFF, we consider it as a base case.
+#define CUTOFF 10
 
 
 static void insertion(Item arr[], int size);
@@ -9,11 +11,15 @@ static void heap(Item arr[], int size);
 static void merge(Item arr[], int size);
 static void m_sort(Item arr[], Item temp[], int left, int right);
 static void merge_two_array(Item arr[], Item temp[], int left, int right, int center);
+static void quick(Item arr[], int size);
+static int median_of_three(Item arr[], int left, int right);
+static void q_sort(Item arr[], int left, int right);
 static void error(const char * prompt)
 {
 	fprintf(stderr, "%s", prompt);
 	exit(EXIT_FAILURE);
 }
+static inline void swap(Item a[], int i, int j) {int temp; temp = a[i]; a[i] = a[j]; a[j] = temp;}
 void Sort(Item arr[], int size, enum alg_type alg)
 {
 	switch(alg)
@@ -26,6 +32,9 @@ void Sort(Item arr[], int size, enum alg_type alg)
 					break;
 		case MERGE: merge(arr, size);
 					break;
+		case QUICK: quick(arr, size);
+					break;
+
 		default: error("Invalid alg_type.\n");
 				break; 
 
@@ -196,6 +205,55 @@ static void merge_two_array(Item arr[], Item temp[], int left, int right, int ce
 	}
 }
 
+static void quick(Item arr[], int size)
+{
+	q_sort(arr, 0, size - 1);
+}
+
+// This requires the array to contain as least three items.
+static inline int median_of_three(Item arr[], int left, int right)
+{
+	int center = (left + right) / 2;
+	if (arr[left] > arr[center])
+		swap(arr, left, center);
+	if (arr[center] > arr[right])
+		swap(arr, center, right);
+	if (arr[left] > arr[center])
+		swap(arr, left, center);
+	swap(arr, center, right - 1);
+
+	return arr[right - 1];
+}
+
+static void q_sort(Item arr[], int left, int right)
+{
+	int pivot;
+	int i = left;
+	int j = right - 1;
+
+	// printf("%d %d\n", left, right);
+	if (right - left + 1 <= CUTOFF)
+	{
+		insertion(arr, right - left + 1);
+	}
+	else
+	{
+		pivot = median_of_three(arr, left, right);
+		while(1)
+		{
+			while(arr[++i] < pivot);
+			while(arr[--j] > pivot);
+			if (i < j)
+				swap(arr, i, j);	
+			else 
+				break;		
+		}
+		swap(arr, i, right - 1);
+		q_sort(arr, left, i - 1);
+		q_sort(arr, i + 1, right);	
+	}
+	
+}
 
 
 

@@ -7,8 +7,8 @@ enum alg_type
 	INSERTION,
 	SHELL,
 	HEAP,
-	QUICK,
 	MERGE,
+	QUICK,
 	BUCKET
 
 };
