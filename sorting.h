@@ -13,4 +13,5 @@ enum alg_type
 
 };
 void Sort(Item arr[], int size, enum alg_type alg);
+int Selection(Item arr[], int size, int k);
 #endif

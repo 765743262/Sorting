@@ -14,12 +14,15 @@ static void merge_two_array(Item arr[], Item temp[], int left, int right, int ce
 static void quick(Item arr[], int size);
 static int median_of_three(Item arr[], int left, int right);
 static void q_sort(Item arr[], int left, int right);
+static int quickselect(Item arr[], int left, int right, int k);
 static void error(const char * prompt)
 {
 	fprintf(stderr, "%s", prompt);
 	exit(EXIT_FAILURE);
 }
 static inline void swap(Item a[], int i, int j) {int temp; temp = a[i]; a[i] = a[j]; a[j] = temp;}
+static inline int max(int a, int b) {return (a > b) ? a : b;}
+static inline int min(int a, int b) {return (a < b) ? a : b;}
 void Sort(Item arr[], int size, enum alg_type alg)
 {
 	switch(alg)
@@ -39,6 +42,10 @@ void Sort(Item arr[], int size, enum alg_type alg)
 				break; 
 
 	}
+}
+int Selection(Item arr[], int size, int k)
+{
+	return quickselect(arr, 0, size - 1, k);
 }
 
 static void insertion(Item arr[], int size)
@@ -93,10 +100,13 @@ static void heap(Item arr[], int size)
 	int i, j;
 	int child_index;
 	
+	// This algorithm is hard to be coded correctly.
+	// You must check whether there is sentinel
+	// to decide what's the parents and child or a node.
 	for (j = (size - 1) / 2; j >= 0; j--)
 	{
 		temp = arr[j];
-		for (i = j; i <= (size - 1) / 2; i = child_index)
+		for (i = j; i <= (size - 2) / 2; i = child_index)
 		{
 			child_index = i * 2 + 1;
 			if ((child_index != size - 1) && (arr[child_index] < arr[child_index + 1]))
@@ -114,10 +124,10 @@ static void heap(Item arr[], int size)
 	{
 		max = arr[0];
 		temp = arr[i];
-		for (j = 0; j <= i / 2; j = child_index)
+		for (j = 0; j <= (i - 2) / 2; j = child_index)
 		{
 			child_index = j * 2 + 1;
-			if ((child_index != size - 1) && (arr[child_index] < arr[child_index + 1]))
+			if ((child_index != i - 1) && (arr[child_index] < arr[child_index + 1]))
 			{
 				child_index++;
 			}
@@ -204,13 +214,18 @@ static void merge_two_array(Item arr[], Item temp[], int left, int right, int ce
 		}
 	}
 }
-
+// Driver for recursive q_sort
 static void quick(Item arr[], int size)
 {
 	q_sort(arr, 0, size - 1);
 }
 
 // This requires the array to contain as least three items.
+
+// This arranges items at left, center and right in
+// correct order, then puts item at the center to right - 1
+
+// And return the value of the pivot
 static inline int median_of_three(Item arr[], int left, int right)
 {
 	int center = (left + right) / 2;
@@ -232,15 +247,19 @@ static void q_sort(Item arr[], int left, int right)
 	int j = right - 1;
 
 	// printf("%d %d\n", left, right);
+	//Check CUTOFF to use insertion instead
 	if (right - left + 1 <= CUTOFF)
 	{
-		insertion(arr, right - left + 1);
+		insertion(arr + left, right - left + 1);
 	}
 	else
 	{
 		pivot = median_of_three(arr, left, right);
+		// For each pass, right part of i is always done.
 		while(1)
 		{
+			// For i and j will always be the first one that does not meet condition
+			// So i cannot stop at j, but get past each other
 			while(arr[++i] < pivot);
 			while(arr[--j] > pivot);
 			if (i < j)
@@ -248,11 +267,46 @@ static void q_sort(Item arr[], int left, int right)
 			else 
 				break;		
 		}
+		// This works bacause of construction process.
 		swap(arr, i, right - 1);
 		q_sort(arr, left, i - 1);
 		q_sort(arr, i + 1, right);	
 	}
 	
+}
+
+static int quickselect(Item arr[], int left, int right, int k)
+{
+	int size = right - left + 1;
+	int pivot;
+	int i = left;
+	int j = right - 1;
+	if (size == 1)
+		return arr[left];
+	else if (size == 2)
+		return (k = 1) ? min(arr[left], arr[right]):max(arr[left], arr[right]);
+	else
+	{
+		pivot = median_of_three(arr, left, right);
+		while(1)
+		{
+			// For i and j will always be the first one that does not meet condition
+			// So i cannot stop at j, but get past each other
+			while(arr[++i] < pivot);
+			while(arr[--j] > pivot);
+			if (i < j)
+				swap(arr, i, j);	
+			else 
+				break;		
+		}
+		swap(arr, i, right - 1); 
+		if (k <= (i - left))
+			return quickselect(arr, left, i - 1, k);
+		else if (k == (i - left + 1))
+			return arr[i];
+		else
+			return quickselect(arr, i + 1, right, k - (i - left + 1));
+	}
 }
 
 
